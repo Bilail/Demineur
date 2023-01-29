@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Minesweeper
@@ -22,17 +23,33 @@ namespace Minesweeper
             ROWS = int.Parse(rowsTextBox.Text);
             COLS = int.Parse(colsTextBox.Text);
             MINES = int.Parse(minesTextBox.Text);
-
+            
             // Initiale the form
-            Text = "test";
+            Text = "Minesweeper";
             Size = new System.Drawing.Size(30 * COLS, 30 * ROWS);
             // Initialize the minefield
             mines = new bool[ROWS, COLS];
+
             for (int i = 0; i < MINES; i++)
             {
                 int row = new Random().Next(ROWS);
                 int col = new Random().Next(COLS);
+                while (mines[row, col])
+                {
+                    row = new Random().Next(ROWS);
+                    col = new Random().Next(COLS);
+                }
                 mines[row, col] = true;
+                
+            }
+            //afficher dans la console le tableau mines 
+            for (int row = 0; row < ROWS; row++)
+            {
+                for (int col = 0; col < COLS; col++)
+                {
+                    Console.Write(mines[row, col] + " ");
+                }
+                Console.WriteLine();
             }
 
             // Initialize the buttons
@@ -64,14 +81,25 @@ namespace Minesweeper
             if (mines[row, col])
             {
                 // Game over
-                MessageBox.Show("You hit a mine! Game over.");
-                Application.Exit();
+                button.BackgroundImage = Image.FromFile("../../bomb.png");
+                //MessageBox.Show("You hit a mine! Game over.");
+                //Game game = new Game();
+                //game.Show();
+                //Application.Exit();
             }
-            else
+            else 
             {
                 // Reveal the number of surrounding mines
                 int count = GetSurroundingMines(row, col);
                 button.Text = count.ToString();
+                button.BackColor = Color.LightGray;
+                if(count == 0)
+                {
+                    bool[,] visited = new bool[ROWS, COLS];
+                    RevealSurroundingCells(row, col, visited);
+                    
+                }
+                
             }
         }
 
@@ -93,6 +121,35 @@ namespace Minesweeper
 
             return count;
         }
+        /** Reveal the surrounding cells */
+        private void RevealSurroundingCells(int row, int col,bool[,] visited)
+        {
+            visited[row,col] = true;
+            for (int i = row - 1; i <= row + 1; i++)
+            {
+                for (int j = col - 1; j <= col + 1; j++)
+                {
+                    if (i >= 0 && i < ROWS && j >= 0 && j < COLS && !mines[i, j] && !visited[i,j])
+                    {
+                        int count = GetSurroundingMines(i, j);
+                        if (count == 0)
+                        {
+                            RevealSurroundingCells(i, j,visited);
+                            buttons[i, j].BackColor = Color.LightGray;
+                        }
+                        if (!(count == 0))
+                        {
+                            buttons[i, j].Text = count.ToString();
+                            buttons[i, j].BackColor = Color.LightGray;
+                        }
+                    }
+                }
+            }
+        }
+
+
     }
+    
+    
 }
     
