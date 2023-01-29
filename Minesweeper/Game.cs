@@ -6,6 +6,7 @@ namespace Minesweeper
 {
     public partial class Game : Form
     {
+        
         // Declare variables for the game
         private int ROWS;
         private int COLS;
@@ -15,6 +16,8 @@ namespace Minesweeper
 
         public Game()
         {
+            this.AutoSize = true;
+            this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
         }
 
         public void StartButtonClick(object sender, TextBox rowsTextBox, TextBox colsTextBox, TextBox minesTextBox)
@@ -81,8 +84,15 @@ namespace Minesweeper
             if (mines[row, col])
             {
                 // Game over
-                button.BackgroundImage = Image.FromFile("../../bomb.png");
-                //MessageBox.Show("You hit a mine! Game over.");
+                revealAllMines();
+                if(MessageBox.Show("You hit a mine! Game over. \n Do you want to play again?", "Game Over", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    Application.Restart();
+                }
+                else
+                {
+                    Application.Exit();
+                }
                 //Game game = new Game();
                 //game.Show();
                 //Application.Exit();
@@ -146,6 +156,22 @@ namespace Minesweeper
                 }
             }
         }
+
+        public void revealAllMines()
+        {
+            for (int row = 0; row < ROWS; row++)
+            {
+                for (int col = 0; col < COLS; col++)
+                {
+                    if (mines[row, col])
+                    {
+                        buttons[row, col].BackgroundImage = Image.FromFile("../../bomb.png");
+                        buttons[row, col].BackgroundImageLayout = ImageLayout.Stretch;
+                    }
+                }
+            }
+        }
+        
 
 
     }
