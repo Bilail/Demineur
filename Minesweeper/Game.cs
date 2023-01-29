@@ -101,7 +101,22 @@ namespace Minesweeper
             {
                 // Reveal the number of surrounding mines
                 int count = GetSurroundingMines(row, col);
-                button.Text = count.ToString();
+                if(count != 0)
+                {
+                    button.Text = count.ToString();
+                }
+                if (button.Text == "1")
+                {
+                    button.ForeColor = Color.Blue;
+                }
+                if (button.Text == "2")
+                {
+                    button.ForeColor = Color.Green;
+                }
+                if (button.Text == "3")
+                {
+                    button.ForeColor = Color.Red;
+                }
                 button.BackColor = Color.LightGray;
                 if(count == 0)
                 {
@@ -150,6 +165,18 @@ namespace Minesweeper
                         if (!(count == 0))
                         {
                             buttons[i, j].Text = count.ToString();
+                            if (buttons[i, j].Text == "1")
+                            {
+                                buttons[i, j].ForeColor = Color.Blue;
+                            }
+                            if (buttons[i, j].Text == "2")
+                            {
+                                buttons[i, j].ForeColor = Color.Green;
+                            }
+                            if (buttons[i, j].Text == "3")
+                            {
+                                buttons[i, j].ForeColor = Color.Red;
+                            }
                             buttons[i, j].BackColor = Color.LightGray;
                         }
                     }
