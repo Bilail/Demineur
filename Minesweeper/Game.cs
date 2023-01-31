@@ -13,6 +13,7 @@ namespace Minesweeper
         private int MINES;
         private bool[,] mines;
         private Button[,] buttons;
+        private int restant;
 
         public Game()
         {
@@ -26,7 +27,8 @@ namespace Minesweeper
             ROWS = int.Parse(rowsTextBox.Text);
             COLS = int.Parse(colsTextBox.Text);
             MINES = int.Parse(minesTextBox.Text);
-            
+            restant = ROWS * COLS - MINES;
+
             // Initiale the form
             Text = "Minesweeper";
             Size = new System.Drawing.Size(30 * COLS, 30 * ROWS);
@@ -99,6 +101,7 @@ namespace Minesweeper
             }
             else 
             {
+                restant--;
                 // Reveal the number of surrounding mines
                 int count = GetSurroundingMines(row, col);
                 if(count != 0)
@@ -118,6 +121,7 @@ namespace Minesweeper
                     button.ForeColor = Color.Red;
                 }
                 button.BackColor = Color.LightGray;
+                win();
                 if(count == 0)
                 {
                     bool[,] visited = new bool[ROWS, COLS];
@@ -156,14 +160,26 @@ namespace Minesweeper
                 {
                     if (i >= 0 && i < ROWS && j >= 0 && j < COLS && !mines[i, j] && !visited[i,j])
                     {
+                        visited[i,j] = true;
+                        
                         int count = GetSurroundingMines(i, j);
                         if (count == 0)
                         {
                             RevealSurroundingCells(i, j,visited);
+                            if(buttons[i,j].Text == "" && buttons[i,j].BackColor != Color.LightGray)
+                            {
+                                restant--;
+                                
+                            }
                             buttons[i, j].BackColor = Color.LightGray;
+                            win();
                         }
-                        if (!(count == 0))
+                        else
                         {
+                            if(buttons[i,j].Text == "" && buttons[i,j].BackColor != Color.LightGray)
+                            {
+                                restant--;
+                            }
                             buttons[i, j].Text = count.ToString();
                             if (buttons[i, j].Text == "1")
                             {
@@ -178,6 +194,8 @@ namespace Minesweeper
                                 buttons[i, j].ForeColor = Color.Red;
                             }
                             buttons[i, j].BackColor = Color.LightGray;
+                            
+                            win();
                         }
                     }
                 }
@@ -195,6 +213,22 @@ namespace Minesweeper
                         buttons[row, col].BackgroundImage = Image.FromFile("../../bomb.png");
                         buttons[row, col].BackgroundImageLayout = ImageLayout.Stretch;
                     }
+                }
+            }
+        }
+        
+        public void win()
+        {
+            if(restant == 0)
+            {
+                revealAllMines();
+                if (MessageBox.Show("You won! \n Do you want to play again?", "Game Over", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    Application.Restart();
+                }
+                else
+                {
+                    Application.Exit();
                 }
             }
         }
